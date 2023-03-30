@@ -132,7 +132,7 @@ class AG(QMainWindow):
         return arboles_plantados
 
     def visualizar_arboles_plantados(self, arboles_plantados):
-        plt.figure(figsize=(7, 7))
+        plt.figure(figsize=(9, 5))
         colors = {"Mango": "red", "Limon": "green", "Nanche": "blue", "Aguacate": "cyan", "Coco": "magenta"}
         markers = {"Mango": "o", "Limon": "s", "Nanche": "v", "Aguacate": "D", "Coco": "^"}
         labels = set()
@@ -148,8 +148,8 @@ class AG(QMainWindow):
             else:
                 plt.scatter(x, y, c=color, marker=marker)
 
-        plt.xlim(0, self.ladoX)
-        plt.ylim(0, self.ladoY)
+        plt.xlim(-5, self.ladoX + 5)
+        plt.ylim(-5, self.ladoY + 5)
 
         plt.xlabel("Eje X")
         plt.ylabel("Eje Y")
@@ -160,6 +160,7 @@ class AG(QMainWindow):
 
         plt.tight_layout()
         plt.show()
+
 
     # Esta función debe generar una población inicial de individuos,
     # donde cada individuo es una permutación aleatoria de la lista de árboles.
@@ -309,7 +310,7 @@ class AG(QMainWindow):
 
 
     def visualizar_manguera_riego(self, arboles_plantados, mejor_individuo, manguera):
-        fig, ax = plt.subplots(figsize=(10, 8))
+        fig, ax = plt.subplots(figsize=(10, 6))
         colores = {"Mango": "red", "Limon": "green", "Nanche": "blue", "Aguacate": "yellow", "Coco": "purple"}
 
         # Crear una lista de elementos de leyenda
@@ -325,7 +326,6 @@ class AG(QMainWindow):
         ruta = [arboles_plantados[i] for i in mejor_individuo]
 
         # Añadir el árbol más cercano al inicio de la ruta
-        #manguera = (self.ladoX / 2, 0)
         arbol_cercano = self.arbol_mas_cercano(manguera, arboles_plantados)
         ruta.insert(0, arbol_cercano)
 
@@ -357,7 +357,9 @@ class AG(QMainWindow):
         # Añadir la leyenda
         plt.legend(handles=elementos_leyenda, loc="upper left", bbox_to_anchor=(1.05, 1), borderaxespad=0)
         plt.title("Plantación y recorrido de la manguera de riego")
+        plt.tight_layout()
         plt.show()
+
 
     def graficar_aptitud(self):
         plt.plot(self.mejor_aptitud_por_generacion)
