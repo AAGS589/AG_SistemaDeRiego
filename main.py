@@ -216,21 +216,24 @@ class AG(QMainWindow):
 
             return ((x1 - x2) ** 2 + (y1 - y2) ** 2) ** 0.5
 
+        bomba_de_agua = (0, 0)
 
-      
-        bomba_de_agua = (0,0)
-
-       
         distancia_total = distancia(bomba_de_agua, arboles_plantados[individuo[0]])
 
-       
         distancia_total += sum(distancia(arboles_plantados[individuo[i]], arboles_plantados[individuo[i + 1]])
-                                for i in range(len(individuo) - 1))
+                            for i in range(len(individuo) - 1))
 
-        
         distancia_total += distancia(arboles_plantados[individuo[-1]], bomba_de_agua)
 
-        return distancia_total
+        penalizaciones_cruces = 0
+        for i, arbol1 in enumerate(arboles_plantados):
+            for j, arbol2 in enumerate(arboles_plantados):
+                arbol3 = arboles_plantados[individuo[i - 1]]
+                arbol4 = arboles_plantados[individuo[j - 1]]
+                if i != j and self.se_cruzan(arbol1, arbol2, arbol3, arbol4):
+                    penalizaciones_cruces += self.penalizacion_cruces
+
+        return distancia_total + penalizaciones_cruces
 
         
     def seleccion(self, poblacion, aptitudes, k=2):
