@@ -11,8 +11,8 @@ class Terreno:
         y_actual = espacio_borde + espacio_adicional_y
         tipos_arboles = list(arboles.keys())
 
-        filas = 7
-        columnas = 7
+        filas = 5
+        columnas = 5
 
         ancho_celda = (self.ladoX - 2 * espacio_borde) / columnas
         alto_celda = (self.ladoY - 2 * espacio_borde) / filas
