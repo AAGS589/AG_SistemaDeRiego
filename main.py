@@ -201,6 +201,12 @@ class AG(QMainWindow):
         self.guardar_manguera_riego_por_generacion(arboles_plantados, mejor_individuo, self.manguera, generacion)
 
         return mejor_individuo
+    
+    def se_cruzan(self, a, b, c, d):
+        def ccw(A, B, C):
+            return (C[1] - A[1]) * (B[0] - A[0]) > (B[1] - A[1]) * (C[0] - A[0])
+
+        return ccw(a, c, d) != ccw(b, c, d) and ccw(a, b, c) != ccw(a, b, d)
 
 
     def funcion_aptitud(self, individuo, arboles_plantados):
