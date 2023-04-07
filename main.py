@@ -112,6 +112,7 @@ class AG(QMainWindow):
         return arbol_cercano
 
     def generar_arboles_plantados(self, archivo="arboles2.csv"):
+        print("---------------------------Generando árboles---------------------------")
         arboles_plantados = []
 
         with open(archivo, "r") as f:
@@ -133,35 +134,6 @@ class AG(QMainWindow):
         print("---------------------------FIN    METODO ARBOLES PLANTADOS---------------------------")
         return arboles_plantados
 
-    def visualizar_arboles_plantados(self, arboles_plantados):
-        plt.figure(figsize=(9, 5))
-        colors = {"Mango": "red", "Limon": "green", "Nanche": "blue", "Aguacate": "cyan", "Coco": "magenta"}
-        markers = {"Mango": "o", "Limon": "s", "Nanche": "v", "Aguacate": "D", "Coco": "^"}
-        labels = set()
-
-        for arbol in arboles_plantados:
-            x, y, tipo_arbol = arbol
-            color = colors[tipo_arbol]
-            marker = markers[tipo_arbol]
-
-            if tipo_arbol not in labels:
-                plt.scatter(x, y, c=color, label=tipo_arbol, marker=marker)
-                labels.add(tipo_arbol)
-            else:
-                plt.scatter(x, y, c=color, marker=marker)
-
-        plt.xlim(-5, self.ladoX + 5)
-        plt.ylim(-5, self.ladoY + 5)
-
-        plt.xlabel("Eje X")
-        plt.ylabel("Eje Y")
-        plt.title("Distribución de árboles plantados")
-
-        
-        plt.legend(loc="upper left", bbox_to_anchor=(1.05, 1), borderaxespad=0)
-
-        plt.tight_layout()
-        plt.show()
 
 
     def generar_poblacion_inicial(self, arboles_plantados, pobInicial):
@@ -185,10 +157,9 @@ class AG(QMainWindow):
 
         generacion = 0
         while generacion < self.numGeneraciones and mejora_aptitud >= self.precision:
-           
+
             aptitudes = [self.funcion_aptitud(individuo, arboles_plantados) for individuo in poblacion]
 
-           
             indice_mejor_individuo = aptitudes.index(min(aptitudes))
             aptitud_mejor_individuo = aptitudes[indice_mejor_individuo]
 
@@ -196,36 +167,39 @@ class AG(QMainWindow):
                 mejora_aptitud = mejor_aptitud - aptitud_mejor_individuo
                 mejor_aptitud = aptitud_mejor_individuo
                 mejor_individuo = poblacion[indice_mejor_individuo]
-            
+
             self.mejor_aptitud_por_generacion.append(mejor_aptitud)
 
-           
             individuos_seleccionados = self.seleccion(poblacion, aptitudes)
 
-         
             nueva_poblacion = []
 
             while len(nueva_poblacion) < len(poblacion):
-                
+
                 padre1 = random.choice(individuos_seleccionados)
                 padre2 = random.choice(individuos_seleccionados)
 
-              
                 hijo = self.cruza(padre1, padre2)
 
-              
                 if random.random() < self.probMutacionIndividuo:
                     hijo = self.mutacion(hijo)
 
-               
                 nueva_poblacion.append(hijo)
 
             poblacion = self.poda(nueva_poblacion)
-          
+
             poblacion = nueva_poblacion
 
+            # Guardar la imagen del recorrido de la generación actual
+            self.guardar_manguera_riego_por_generacion(arboles_plantados, mejor_individuo, self.manguera, generacion)
+
             generacion += 1
-        
+
+        # Al final de todas las generaciones
+        mejor_individuo = self.optimizacion_local_3_opt(mejor_individuo, arboles_plantados)
+
+        self.guardar_manguera_riego_por_generacion(arboles_plantados, mejor_individuo, self.manguera, generacion)
+
         return mejor_individuo
 
 
@@ -306,6 +280,35 @@ class AG(QMainWindow):
         nueva_poblacion = [poblacion[i] for i in indices_ordenados[:n_sobrevivientes]]
         return nueva_poblacion
 
+    def visualizar_arboles_plantados(self, arboles_plantados):
+        plt.figure(figsize=(9, 5))
+        colors = {"Mango": "red", "Limon": "green", "Nanche": "blue", "Aguacate": "cyan", "Coco": "magenta"}
+        markers = {"Mango": "o", "Limon": "s", "Nanche": "v", "Aguacate": "D", "Coco": "^"}
+        labels = set()
+
+        for arbol in arboles_plantados:
+            x, y, tipo_arbol = arbol
+            color = colors[tipo_arbol]
+            marker = markers[tipo_arbol]
+
+            if tipo_arbol not in labels:
+                plt.scatter(x, y, c=color, label=tipo_arbol, marker=marker)
+                labels.add(tipo_arbol)
+            else:
+                plt.scatter(x, y, c=color, marker=marker)
+
+        plt.xlim(-5, self.ladoX + 5)
+        plt.ylim(-5, self.ladoY + 5)
+
+        plt.xlabel("Eje X")
+        plt.ylabel("Eje Y")
+        plt.title("Distribución de árboles plantados")
+
+        
+        plt.legend(loc="upper left", bbox_to_anchor=(1.05, 1), borderaxespad=0)
+
+        plt.tight_layout()
+        plt.show()
 
     def visualizar_manguera_riego(self, arboles_plantados, mejor_individuo, manguera):
         fig, ax = plt.subplots(figsize=(10, 6))
