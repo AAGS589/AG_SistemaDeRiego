@@ -274,11 +274,9 @@ class AG(QMainWindow):
 
     def mutacion(self, individuo):
      
-        
         pos1 = random.randint(0, len(individuo) - 1)
         pos2 = random.randint(0, len(individuo) - 1)
 
-       
         individuo[pos1], individuo[pos2] = individuo[pos2], individuo[pos1]
         return individuo
     
@@ -288,6 +286,37 @@ class AG(QMainWindow):
         indices_ordenados = sorted(range(len(aptitudes)), key=lambda i: aptitudes[i], reverse=True)
         nueva_poblacion = [poblacion[i] for i in indices_ordenados[:n_sobrevivientes]]
         return nueva_poblacion
+    
+    def optimizacion_local_3_opt(self, individuo, arboles_plantados, max_iteraciones=100):
+        def swap_3_opt(individuo, i, j, k):
+            nuevo_individuo = individuo[:i] + individuo[i:j][::-1] + individuo[j:k][::-1] + individuo[k:]
+            return nuevo_individuo
+
+        mejor_individuo = individuo[:]
+        mejor_aptitud = self.funcion_aptitud(individuo, arboles_plantados)
+
+        n = len(individuo)
+        iteracion = 0
+
+        while iteracion < max_iteraciones:
+            hubo_mejora = False
+            for i in range(n):
+                for j in range(i + 1, n):
+                    for k in range(j + 1, n):
+                        nuevo_individuo = swap_3_opt(mejor_individuo, i, j, k)
+                        nueva_aptitud = self.funcion_aptitud(nuevo_individuo, arboles_plantados)
+
+                        if nueva_aptitud < mejor_aptitud:
+                            mejor_individuo = nuevo_individuo[:]
+                            mejor_aptitud = nueva_aptitud
+                            hubo_mejora = True
+
+            if not hubo_mejora:
+                break
+
+            iteracion += 1
+
+        return mejor_individuo
 
     def visualizar_arboles_plantados(self, arboles_plantados):
         plt.figure(figsize=(9, 5))
