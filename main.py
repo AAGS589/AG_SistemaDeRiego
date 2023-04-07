@@ -20,6 +20,7 @@ class AG(QMainWindow):
         self.arboles_plantados = None
         self.mejor_individuo = None
         self.penalizacion_cruces = 0.1
+        
 
         self.input_pobInicial.setText("20")   
         self.input_pobMaxima.setText("25")
@@ -134,6 +135,7 @@ class AG(QMainWindow):
         print("---------------------------FIN    METODO ARBOLES PLANTADOS---------------------------")
         return arboles_plantados
 
+    
 
 
     def generar_poblacion_inicial(self, arboles_plantados, pobInicial):
@@ -193,6 +195,7 @@ class AG(QMainWindow):
             # Guardar la imagen del recorrido de la generación actual
             self.guardar_manguera_riego_por_generacion(arboles_plantados, mejor_individuo, self.manguera, generacion)
 
+            print(f"Mejor individuo en la generación {generacion}: {mejor_individuo}")
             generacion += 1
 
         # Al final de todas las generaciones
@@ -201,7 +204,7 @@ class AG(QMainWindow):
         self.guardar_manguera_riego_por_generacion(arboles_plantados, mejor_individuo, self.manguera, generacion)
 
         return mejor_individuo
-    
+
     def se_cruzan(self, a, b, c, d):
         def ccw(A, B, C):
             return (C[1] - A[1]) * (B[0] - A[0]) > (B[1] - A[1]) * (C[0] - A[0])
@@ -235,10 +238,10 @@ class AG(QMainWindow):
 
         return distancia_total + penalizaciones_cruces
 
-        
+
+    
     def seleccion(self, poblacion, aptitudes, k=2):
         seleccionados = []
-
         for _ in range(len(poblacion)):
             competidores = random.sample(list(enumerate(aptitudes)), k)
             ganador, aptitud_ganador = min(competidores, key=lambda x: x[1])
@@ -246,37 +249,29 @@ class AG(QMainWindow):
         
         return seleccionados
 
-    
     def cruza(self, padre1, padre2):
        
         punto_corte1 = random.randint(0, len(padre1) - 1)
         punto_corte2 = random.randint(0, len(padre1) - 1)
 
-       
         if punto_corte1 > punto_corte2:
             punto_corte1, punto_corte2 = punto_corte2, punto_corte1
-
       
         hijo = [None] * len(padre1)
         hijo[punto_corte1:punto_corte2] = padre1[punto_corte1:punto_corte2]
-
         
         elementos_faltantes = [x for x in padre2 if x not in hijo[punto_corte1:punto_corte2]]
 
-       
         for i in range(len(hijo)):
             if hijo[i] is None:
                 hijo[i] = elementos_faltantes.pop(0)
 
         return hijo
 
-        
-
     def mutacion(self, individuo):
-     
         pos1 = random.randint(0, len(individuo) - 1)
         pos2 = random.randint(0, len(individuo) - 1)
-
+       
         individuo[pos1], individuo[pos2] = individuo[pos2], individuo[pos1]
         return individuo
     
@@ -317,6 +312,7 @@ class AG(QMainWindow):
             iteracion += 1
 
         return mejor_individuo
+
 
     def visualizar_arboles_plantados(self, arboles_plantados):
         plt.figure(figsize=(9, 5))
@@ -394,13 +390,14 @@ class AG(QMainWindow):
         plt.show()
 
 
+
     def graficar_aptitud(self):
         plt.plot(self.mejor_aptitud_por_generacion)
         plt.xlabel("Generación")
         plt.ylabel("Aptitud")
         plt.title("Evolución de la aptitud del mejor individuo")
         plt.show()
-        
+    
     def guardar_manguera_riego_por_generacion(self, arboles_plantados, mejor_individuo_por_generacion, manguera, generacion):
         fig, ax = plt.subplots(figsize=(10, 6))
         colores = {"Mango": "red", "Limon": "green", "Nanche": "blue", "Aguacate": "yellow", "Coco": "purple"}
@@ -409,17 +406,20 @@ class AG(QMainWindow):
             x, y, tipo = arbol
             plt.scatter(x, y, c=colores[tipo], label=tipo, alpha=0.5)
         
+        # Dibujar manguera de riego
         manguera_xy = [(arboles_plantados[i][0], arboles_plantados[i][1]) for i in mejor_individuo_por_generacion]
         manguera_xy.append((arboles_plantados[mejor_individuo_por_generacion[0]][0], arboles_plantados[mejor_individuo_por_generacion[0]][1]))
         manguera_line, = plt.plot(*zip(*manguera_xy), linestyle='-', color='black', linewidth=1, alpha=0.8)
 
-        
+        # Crear el directorio 'img' si no existe
         if not os.path.exists("img"):
             os.makedirs("img")
 
+        # Guardar la imagen en el directorio 'img' con el número de generación en el nombre del archivo
         #print(f"Guardando imagen para la generación {generacion} en img/generacion_{generacion}.png")
         plt.savefig(f"img/generacion_{generacion}.png", bbox_inches="tight")
         plt.close()
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
