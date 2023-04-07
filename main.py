@@ -400,6 +400,26 @@ class AG(QMainWindow):
         plt.ylabel("Aptitud")
         plt.title("Evolución de la aptitud del mejor individuo")
         plt.show()
+        
+    def guardar_manguera_riego_por_generacion(self, arboles_plantados, mejor_individuo_por_generacion, manguera, generacion):
+        fig, ax = plt.subplots(figsize=(10, 6))
+        colores = {"Mango": "red", "Limon": "green", "Nanche": "blue", "Aguacate": "yellow", "Coco": "purple"}
+
+        for arbol in arboles_plantados:
+            x, y, tipo = arbol
+            plt.scatter(x, y, c=colores[tipo], label=tipo, alpha=0.5)
+        
+        manguera_xy = [(arboles_plantados[i][0], arboles_plantados[i][1]) for i in mejor_individuo_por_generacion]
+        manguera_xy.append((arboles_plantados[mejor_individuo_por_generacion[0]][0], arboles_plantados[mejor_individuo_por_generacion[0]][1]))
+        manguera_line, = plt.plot(*zip(*manguera_xy), linestyle='-', color='black', linewidth=1, alpha=0.8)
+
+        
+        if not os.path.exists("img"):
+            os.makedirs("img")
+
+        #print(f"Guardando imagen para la generación {generacion} en img/generacion_{generacion}.png")
+        plt.savefig(f"img/generacion_{generacion}.png", bbox_inches="tight")
+        plt.close()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
