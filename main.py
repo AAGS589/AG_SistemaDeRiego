@@ -352,7 +352,6 @@ class AG(QMainWindow):
         fig, ax = plt.subplots(figsize=(10, 6))
         colores = {"Mango": "red", "Limon": "green", "Nanche": "blue", "Aguacate": "yellow", "Coco": "purple"}
 
-        
         elementos_leyenda = []
 
         for tipo, color in colores.items():
@@ -360,11 +359,10 @@ class AG(QMainWindow):
 
         for x, y, tipo in arboles_plantados:
             plt.scatter(x, y, color=colores[tipo], marker='o', s=50)
+            plt.text(x, y, f"({int(x)}, {int(y)})", fontsize=10)
 
-       
         ruta = [arboles_plantados[i] for i in mejor_individuo]
 
-        
         arbol_cercano = self.arbol_mas_cercano(manguera, arboles_plantados)
         ruta.insert(0, arbol_cercano)
 
@@ -373,19 +371,16 @@ class AG(QMainWindow):
 
         plt.plot(ruta_x, ruta_y, color="black", linewidth=1, linestyle='--')
 
-       
         plt.plot([manguera[0], arbol_cercano[0]], [manguera[1], arbol_cercano[1]], color="black", linewidth=1, linestyle="--")
 
         plt.scatter(*manguera, color="black", marker='s', s=50)
         plt.text(manguera[0], manguera[1], "Bomba", fontsize=12)
 
-       
         for i in range(len(ruta) - 1):
             x1, y1, _ = ruta[i]
             x2, y2, _ = ruta[i + 1]
             plt.arrow(x1, y1, x2 - x1, y2 - y1, color="black", linestyle='--', length_includes_head=True, head_width=2, head_length=2)
 
-        
         ultimo_arbol = ruta[-1]
         plt.scatter(ultimo_arbol[0], ultimo_arbol[1], color="orange", marker="*", s=100)
         plt.text(ultimo_arbol[0], ultimo_arbol[1], "Fin manguera", fontsize=12)
@@ -393,7 +388,6 @@ class AG(QMainWindow):
         plt.xlim(0, self.ladoX)
         plt.ylim(0, self.ladoY)
 
-        
         plt.legend(handles=elementos_leyenda, loc="upper left", bbox_to_anchor=(1.05, 1), borderaxespad=0)
         plt.title("Plantación y recorrido de la manguera de riego")
         plt.tight_layout()
